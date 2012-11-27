@@ -25,16 +25,16 @@ using namespace std;
 #define UPPER_BOUND 5
 
 double foods_matrix[FOOD_SOURCES_SIZE][PARAMS_SIZE];
-double food_sources_array[FOOD_SOURCES_SIZE]; /* f is a vector holding objective calculate_function values associated with food sources */
+double food_sources_array[FOOD_SOURCES_SIZE];
 double fitness_array[FOOD_SOURCES_SIZE];
 double trail_count_array[FOOD_SOURCES_SIZE];
 double probabilities_array[FOOD_SOURCES_SIZE];
 double optimum_solution;
 double optimun_params_array[PARAMS_SIZE];
-bool init_flag = true;
 
 /* Funções auxiliares */
 string number_to_String(double n);
+void init();
 double calculate_function(double solution[PARAMS_SIZE]);
 double calculate_fitness(double value);
 double get_random_number();
@@ -49,21 +49,10 @@ int main(int argc, char *argv[]) {
 	int interation = 0; // Inicializar o contador de interações
 	srand(time(NULL));
 
+	init();
+
+	// Iniciar ciclos de busca
 	while (interation < MAX_INTERATIONS) {
-		if (init_flag == true) {
-			// Iniciar todas as abelhas
-			for (int i = 0; i < FOOD_SOURCES_SIZE; i++) {
-				init_bee(i);
-			}
-			// pegar uma solução qualquer como a melhor
-			optimum_solution = food_sources_array[0];
-			for (int i = 0; i < PARAMS_SIZE; i++) {
-				optimun_params_array[i] = foods_matrix[0][i];
-			}
-			// pegar a real melhor solução
-			get_best_source();
-			init_flag = false;
-		}
 		for (int cycle = 0; cycle < MAX_NUM_CYCLES; cycle++) {
 			send_employed_bees();
 			calculate_probabilities();
@@ -86,6 +75,20 @@ string number_to_String(double n) {
 	stringstream out;
 	out << n;
 	return out.str();
+}
+
+void init() {
+	// Iniciar todas as abelhas
+	for (int i = 0; i < FOOD_SOURCES_SIZE; i++) {
+		init_bee(i);
+	}
+	// pegar uma solução qualquer como a melhor
+	optimum_solution = food_sources_array[0];
+	for (int i = 0; i < PARAMS_SIZE; i++) {
+		optimun_params_array[i] = foods_matrix[0][i];
+	}
+	// pegar a real melhor solução
+	get_best_source();
 }
 
 double calculate_function(double solution[PARAMS_SIZE]) {
