@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 			get_best_source();
 			send_scout_bees();
 		}
-		string temp = "Interação(" + number_to_String(interation) + ")";
+		string temp = "Iteração(" + number_to_String(interation) + ")";
 		for (int j = 0; j < PARAMS_SIZE; j++) {
 			temp += "X(" + number_to_String(j + 1) + "): " + number_to_String(
 					optimun_params_array[j]) + " ";
