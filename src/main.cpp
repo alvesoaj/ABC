@@ -14,11 +14,11 @@
 using namespace std;
 
 /* Parâmetros do algoritmo */
-#define POPULATION_SIZE 40
+#define POPULATION_SIZE 4
 #define FOOD_SOURCES_SIZE POPULATION_SIZE/2
 #define LIMIT 100
-#define MAX_NUM_CYCLES 3000
-#define MAX_INTERATIONS 30
+#define MAX_NUM_CYCLES 4
+#define MAX_ITERATIONS 30
 /* Parâmetros do problema */
 #define PARAMS_SIZE 2
 #define LOWER_BOUND -5
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 	init();
 
 	// Iniciar ciclos de busca
-	while (interation < MAX_INTERATIONS) {
+	while (interation < MAX_ITERATIONS) {
 		for (int cycle = 0; cycle < MAX_NUM_CYCLES; cycle++) {
 			send_employed_bees();
 			calculate_probabilities();
