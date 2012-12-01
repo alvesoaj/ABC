@@ -2,7 +2,7 @@
  * main.cpp
  *
  *  Created on: Nov 08, 2012
- *      Author: zerokol
+ *      Author: aj.alves@zerokol.com
  */
 #include <stdlib.h>
 #include <iostream>
@@ -24,7 +24,7 @@ using namespace std;
 #define UPPER_BOUND 0
 #define LOWER_BOUND 1
 
-double bounds_matrix[PARAMS_SIZE][2] = { { -5, 5 }, { -4, 8 } };
+double bounds_matrix[PARAMS_SIZE][2] = { { -6, 8 }, { -10, 7 } };
 double foods_matrix[FOOD_SOURCES_SIZE][PARAMS_SIZE];
 double function_array[FOOD_SOURCES_SIZE];
 double fitness_array[FOOD_SOURCES_SIZE];
@@ -35,6 +35,7 @@ double optimun_params_array[PARAMS_SIZE];
 
 /* Funções auxiliares */
 string number_to_String(double n);
+double calculate_time(clock_t start, clock_t end);
 void init();
 double calculate_function(double solution[PARAMS_SIZE]);
 double calculate_fitness(double value);
@@ -47,6 +48,7 @@ void send_onlooker_bees();
 void send_scout_bees();
 
 int main(int argc, char *argv[]) {
+	clock_t time_start = clock();
 	int interation = 0; // Inicializar o contador de interações
 	srand(time(NULL)); // Para um randon mais eficiente
 	// comandos iniciais
@@ -62,12 +64,14 @@ int main(int argc, char *argv[]) {
 		}
 		string temp = "Iteração(" + number_to_String(interation) + ") -> ";
 		for (int j = 0; j < PARAMS_SIZE; j++) {
-			temp += "X(" + number_to_String(j + 1) + "): "
-					+ number_to_String(optimun_params_array[j]) + " ";
+			temp += "X(" + number_to_String(j + 1) + "): " + number_to_String(
+					optimun_params_array[j]) + " ";
 		}
 		cout << temp << endl;
 		interation++;
 	}
+	cout << "Tempo de exec: " << calculate_time(time_start, clock()) << " ms"
+			<< endl;
 	return 0;
 }
 
@@ -75,6 +79,10 @@ string number_to_String(double n) {
 	stringstream out;
 	out << n;
 	return out.str();
+}
+
+double calculate_time(clock_t start, clock_t end) {
+	return 1000.0 * ((double) (end - start) / (double) CLOCKS_PER_SEC);
 }
 
 void init() {
@@ -93,12 +101,21 @@ void init() {
 
 double calculate_function(double solution[PARAMS_SIZE]) {
 	/*
-	 // f(x, y) = x^2 + y^2
+	 // MIN f(x, y) = x^2 + y^2
 	 return pow(solution[0], 2) + pow(solution[1], 2);
 	 */
-	// f(x, y) = x^2–x*y+y^2–3*y
-	return pow(solution[0], 2) - solution[0] * solution[1] + pow(solution[1], 2)
-			- 3 * solution[1];
+	/*
+	 // MIN f(x, y) = x^2–x*y+y^2–3*y
+	 return pow(solution[0], 2) - solution[0] * solution[1] + pow(solution[1], 2)
+	 - 3 * solution[1];
+	 */
+	/*
+	 // MIN f(x, y) = (x-2)^4 + (x - 2y)^2
+	 return pow(solution[0] - 2, 4) + pow(solution[0] - 2 * solution[1], 2);
+	 */
+	// MIN f(x,y) = 100*(y-x^2)^2+(1 -x)^2
+	return 100 * pow(solution[1] - pow(solution[0], 2), 2) + pow(
+			1 - solution[0], 2);
 }
 
 double calculate_fitness(double value) {
@@ -117,11 +134,9 @@ void init_bee(int index) {
 	double solution[PARAMS_SIZE];
 	for (int j = 0; j < PARAMS_SIZE; j++) {
 		double r = get_random_number();
-		foods_matrix[index][j] =
-				r
-						* (bounds_matrix[j][UPPER_BOUND]
-								- bounds_matrix[j][LOWER_BOUND])
-						+ bounds_matrix[j][LOWER_BOUND];
+		foods_matrix[index][j] = r * (bounds_matrix[j][UPPER_BOUND]
+				- bounds_matrix[j][LOWER_BOUND])
+				+ bounds_matrix[j][LOWER_BOUND];
 		solution[j] = foods_matrix[index][j];
 	}
 	function_array[index] = calculate_function(solution);
@@ -169,13 +184,13 @@ void send_employed_bees() {
 		/* se ultrapassar os limites*/
 		if (new_solution[param_to_modify]
 				< bounds_matrix[param_to_modify][LOWER_BOUND]) {
-			new_solution[param_to_modify] =
-					bounds_matrix[param_to_modify][LOWER_BOUND];
+			new_solution[param_to_modify]
+					= bounds_matrix[param_to_modify][LOWER_BOUND];
 		}
 		if (new_solution[param_to_modify]
 				> bounds_matrix[param_to_modify][UPPER_BOUND]) {
-			new_solution[param_to_modify] =
-					bounds_matrix[param_to_modify][UPPER_BOUND];
+			new_solution[param_to_modify]
+					= bounds_matrix[param_to_modify][UPPER_BOUND];
 		}
 
 		double new_solution_function = calculate_function(new_solution);
@@ -239,19 +254,19 @@ void send_onlooker_bees() {
 			r = get_random_number();
 			new_solution[param_to_modify] = foods_matrix[i][param_to_modify]
 					+ (foods_matrix[i][param_to_modify]
-							- foods_matrix[neighbour][param_to_modify])
-							* (r - 0.5) * 2;
+							- foods_matrix[neighbour][param_to_modify]) * (r
+							- 0.5) * 2;
 
 			/* se ultrapassar os limites*/
 			if (new_solution[param_to_modify]
 					< bounds_matrix[param_to_modify][LOWER_BOUND]) {
-				new_solution[param_to_modify] =
-						bounds_matrix[param_to_modify][LOWER_BOUND];
+				new_solution[param_to_modify]
+						= bounds_matrix[param_to_modify][LOWER_BOUND];
 			}
 			if (new_solution[param_to_modify]
 					> bounds_matrix[param_to_modify][UPPER_BOUND]) {
-				new_solution[param_to_modify] =
-						bounds_matrix[param_to_modify][UPPER_BOUND];
+				new_solution[param_to_modify]
+						= bounds_matrix[param_to_modify][UPPER_BOUND];
 			}
 
 			double new_solution_function = calculate_function(new_solution);
