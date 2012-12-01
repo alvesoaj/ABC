@@ -14,17 +14,17 @@
 using namespace std;
 
 /* Parâmetros do algoritmo */
-#define POPULATION_SIZE 4
+#define POPULATION_SIZE 10
 #define FOOD_SOURCES_SIZE POPULATION_SIZE/2
 #define LIMIT (POPULATION_SIZE*PARAMS_SIZE)/2
-#define MAX_NUM_CYCLES 100
+#define MAX_NUM_CYCLES 1000
 #define MAX_ITERATIONS 30
 /* Parâmetros do problema */
 #define PARAMS_SIZE 2
 #define UPPER_BOUND 0
 #define LOWER_BOUND 1
 
-double bounds_matrix[PARAMS_SIZE][2] = { { -6, 8 }, { -10, 7 } };
+double bounds_matrix[PARAMS_SIZE][2] = { { -20, 40 }, { -30, 50 } };
 double foods_matrix[FOOD_SOURCES_SIZE][PARAMS_SIZE];
 double function_array[FOOD_SOURCES_SIZE];
 double fitness_array[FOOD_SOURCES_SIZE];
@@ -70,6 +70,9 @@ int main(int argc, char *argv[]) {
 		cout << temp << endl;
 		interation++;
 	}
+
+	cout << "f(x, y) = " << optimum_solution << endl;
+
 	cout << "Tempo de exec: " << calculate_time(time_start, clock()) << " ms"
 			<< endl;
 	return 0;
