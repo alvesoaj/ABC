@@ -18,7 +18,7 @@ using namespace std;
 #define CLOCKS_PER_SEC 1000000
 
 /* Parâmetros do algoritmo */
-#define POPULATION_SIZE 10
+#define POPULATION_SIZE 25
 #define FOOD_SOURCES_SIZE POPULATION_SIZE/2
 #define LIMIT (POPULATION_SIZE*PARAMS_SIZE)/2
 #define MAX_NUM_CYCLES 1000
