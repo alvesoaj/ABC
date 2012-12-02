@@ -1,7 +1,8 @@
 /*
+ * ABC
  * main.cpp
  *
- *  Created on: Nov 08, 2012
+ *  Created on: Nov 8, 2012
  *      Author: aj.alves@zerokol.com
  */
 #include <stdlib.h>
@@ -12,6 +13,9 @@
 #include <time.h>
 
 using namespace std;
+
+// BUG
+#define CLOCKS_PER_SEC 1000000
 
 /* Parâmetros do algoritmo */
 #define POPULATION_SIZE 10
@@ -62,9 +66,9 @@ int main(int argc, char *argv[]) {
 			send_scout_bees();
 			get_best_source();
 		}
-		string temp = "Iteração(" + number_to_String(iteration) + ") -> ";
+		string temp = "Iteração(" + number_to_String(iteration) + ")-> ";
 		for (int j = 0; j < PARAMS_SIZE; j++) {
-			temp += "X(" + number_to_String(j + 1) + "): " + number_to_String(
+			temp += "X(" + number_to_String(j + 1) + ")=" + number_to_String(
 					optimun_params_array[j]) + " ";
 		}
 		cout << temp << endl;
@@ -73,7 +77,7 @@ int main(int argc, char *argv[]) {
 
 	cout << "f(x, y) = " << optimum_solution << endl;
 
-	cout << "Tempo de exec: " << calculate_time(time_start, clock()) << " ms"
+	cout << "Tempo de exec (ABC): " << calculate_time(time_start, clock()) << " ms"
 			<< endl;
 	return 0;
 }
