@@ -14,8 +14,8 @@
 
 using namespace std;
 
-// BUG
-#define CLOCKS_PER_SEC 1000000
+// BUG Eclipse
+// #define CLOCKS_PER_SEC 1000000
 
 /* Parâmetros do algoritmo */
 #define POPULATION_SIZE 10
