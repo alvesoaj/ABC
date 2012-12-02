@@ -21,8 +21,8 @@ using namespace std;
 #define MAX_ITERATIONS 30
 /* Parâmetros do problema */
 #define PARAMS_SIZE 2
-#define UPPER_BOUND 0
-#define LOWER_BOUND 1
+#define UPPER_BOUND 1
+#define LOWER_BOUND 0
 
 double bounds_matrix[PARAMS_SIZE][2] = { { -20, 40 }, { -30, 50 } };
 double foods_matrix[FOOD_SOURCES_SIZE][PARAMS_SIZE];
