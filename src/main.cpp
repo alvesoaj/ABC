@@ -49,12 +49,12 @@ void send_scout_bees();
 
 int main(int argc, char *argv[]) {
 	clock_t time_start = clock();
-	int interation = 0; // Inicializar o contador de interações
+	int iteration = 0; // Inicializar o contador de interações
 	srand(time(NULL)); // Para um randon mais eficiente
 	// comandos iniciais
 	init();
 	// Iniciar ciclos de busca
-	while (interation < MAX_ITERATIONS) {
+	while (iteration < MAX_ITERATIONS) {
 		for (int cycle = 0; cycle < MAX_NUM_CYCLES; cycle++) {
 			send_employed_bees();
 			calculate_probabilities();
@@ -62,13 +62,13 @@ int main(int argc, char *argv[]) {
 			send_scout_bees();
 			get_best_source();
 		}
-		string temp = "Iteração(" + number_to_String(interation) + ") -> ";
+		string temp = "Iteração(" + number_to_String(iteration) + ") -> ";
 		for (int j = 0; j < PARAMS_SIZE; j++) {
 			temp += "X(" + number_to_String(j + 1) + "): " + number_to_String(
 					optimun_params_array[j]) + " ";
 		}
 		cout << temp << endl;
-		interation++;
+		iteration++;
 	}
 
 	cout << "f(x, y) = " << optimum_solution << endl;
