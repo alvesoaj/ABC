@@ -18,16 +18,16 @@ using namespace std;
 #define CLOCKS_PER_SEC 1000000
 /* Parâmetros do algoritmo */
 #define PI 3.14159265
-#define POPULATION_SIZE 4
+#define POPULATION_SIZE 8
+#define MAX_NUM_CYCLES 100
+#define MAX_ITERATIONS 500
+#define PARAMS_SIZE 2
 #define FOOD_SOURCES_SIZE POPULATION_SIZE/2
 #define LIMIT (POPULATION_SIZE*PARAMS_SIZE)/2
-#define MAX_NUM_CYCLES 100
-#define MAX_ITERATIONS 150
-#define PARAMS_SIZE 2
 #define UPPER_BOUND 1
 #define LOWER_BOUND 0
 
-double bounds_matrix[PARAMS_SIZE][2] = { { -5, 5 }, { -4, 8 } };
+double bounds_matrix[PARAMS_SIZE][2] = { { 0, 10 }, { 0, 10 } };
 double foods_matrix[FOOD_SOURCES_SIZE][PARAMS_SIZE];
 double function_array[FOOD_SOURCES_SIZE];
 double fitness_array[FOOD_SOURCES_SIZE];
@@ -110,22 +110,32 @@ double calculate_function(double solution[PARAMS_SIZE]) {
 	 // MIN f(x, y) = x^2 + y^2
 	 return pow(solution[0], 2) + pow(solution[1], 2);
 	 */
+
 	/*
 	 // MIN f(x, y) = x^2–x*y+y^2–3*y
 	 return pow(solution[0], 2) - solution[0] * solution[1] + pow(solution[1], 2)
 	 - 3 * solution[1];
 	 */
+
 	/*
 	 // MIN f(x, y) = (x-2)^4 + (x - 2y)^2
 	 return pow(solution[0] - 2, 4) + pow(solution[0] - 2 * solution[1], 2);
 	 */
+
 	/*
 	 // MIN f(x,y) = 100*(y-x^2)^2+(1 -x)^2
 	 return 100 * pow(solution[1] - pow(solution[0], 2), 2) + pow(
 	 1 - solution[0], 2);
 	 */
-	// MAX f(x) = x * sen(10*PI*x) + 1
-	return solution[0] * sin(10 * PI * solution[0]) + 1;
+
+	/*
+	 // MAX f(x) = x * sen(10*PI*x) + 1
+	 return solution[0] * sin(10 * PI * solution[0]) + 1;
+	 */
+
+	// MIN f(x,y) = x*sen(4*x) + 1.1*y*sen(2*y)
+	return solution[0] * sin(4 * solution[0])
+			+ 1.1 * solution[1] * sin(2 * solution[1]);
 }
 
 double calculate_fitness(double value) {
@@ -158,7 +168,8 @@ void init_bee(int index) {
 
 void get_best_source() {
 	for (int i = 0; i < FOOD_SOURCES_SIZE; i++) {
-		if (optimum_solution > function_array[i]) {
+		//-------------------------------------------------- MAX > / MIN <
+		if (function_array[i] < optimum_solution) {
 			optimum_solution = function_array[i];
 			for (int j = 0; j < PARAMS_SIZE; j++) {
 				optimun_params_array[j] = foods_matrix[i][j];
@@ -209,6 +220,7 @@ void send_employed_bees() {
 		double new_solution_fitness = calculate_fitness(new_solution_function);
 
 		/* verificar se a nova solução é melhor que a atual */
+		//-------------------------------------------------- MAX < / MIN >
 		if (new_solution_fitness > fitness_array[i]) {
 			trail_count_array[i] = 0;
 			for (int j = 0; j < PARAMS_SIZE; j++) {
@@ -286,6 +298,7 @@ void send_onlooker_bees() {
 					new_solution_function);
 
 			/* verificar se a nova solução é melhor que a atual */
+			//-------------------------------------------------- MAX < / MIN >
 			if (new_solution_fitness > fitness_array[i]) {
 				trail_count_array[i] = 0;
 				for (int j = 0; j < PARAMS_SIZE; j++) {
