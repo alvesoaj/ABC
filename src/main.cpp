@@ -15,12 +15,11 @@
 using namespace std;
 
 // BUG Eclipse
-#define CLOCKS_PER_SEC 1000000
+// #define CLOCKS_PER_SEC 1000000
 /* Parâmetros do algoritmo */
 #define PI 3.14159265
 #define POPULATION_SIZE 8
-#define MAX_NUM_CYCLES 100
-#define MAX_ITERATIONS 500
+#define MAX_NUM_CYCLES 500
 #define PARAMS_SIZE 2
 #define FOOD_SOURCES_SIZE POPULATION_SIZE/2
 #define LIMIT (POPULATION_SIZE*PARAMS_SIZE)/2
@@ -35,6 +34,10 @@ double trail_count_array[FOOD_SOURCES_SIZE];
 double probabilities_array[FOOD_SOURCES_SIZE];
 double optimum_solution;
 double optimun_params_array[PARAMS_SIZE];
+// métricas
+double average = 0.0;
+double variance = 0.0;
+double standard_deviation = 0.0;
 
 /* Funções auxiliares */
 string number_to_String(double n);
@@ -44,37 +47,52 @@ double calculate_function(double solution[PARAMS_SIZE]);
 double calculate_fitness(double value);
 double get_random_number();
 void init_bee(int index);
-void get_best_source();
 void send_employed_bees();
 void calculate_probabilities();
 void send_onlooker_bees();
 void send_scout_bees();
+void get_best_source();
+void calculate_metrics();
 
 int main(int argc, char *argv[]) {
 	clock_t time_start = clock();
-	int iteration = 0; // Inicializar o contador de interações
+	int cycle = 0; // Inicializar o contador de interações
 	srand(time(NULL)); // Para um randon mais eficiente
 	// comandos iniciais
 	init();
 	// Iniciar ciclos de busca
-	while (iteration < MAX_ITERATIONS) {
-		for (int cycle = 0; cycle < MAX_NUM_CYCLES; cycle++) {
-			send_employed_bees();
-			calculate_probabilities();
-			send_onlooker_bees();
-			send_scout_bees();
-			get_best_source();
-		}
-		string temp = "Iteração(" + number_to_String(iteration) + ")-> ";
+	while (cycle < MAX_NUM_CYCLES) {
+		send_employed_bees();
+		calculate_probabilities();
+		send_onlooker_bees();
+		send_scout_bees();
+		get_best_source();
+
+		string temp = "Ciclo(" + number_to_String(cycle) + ")-> ";
 		for (int j = 0; j < PARAMS_SIZE; j++) {
-			temp += "X(" + number_to_String(j + 1) + ")="
-					+ number_to_String(optimun_params_array[j]) + " ";
+			temp += "X(" + number_to_String(j + 1) + ")=" + number_to_String(
+					optimun_params_array[j]) + " ";
 		}
 		cout << temp << endl;
-		iteration++;
+		cycle++;
 	}
 
-	cout << "f(x, y) = " << optimum_solution << endl;
+	cout << "\nMelhor solução: f(x): " << optimum_solution << endl;
+
+	calculate_metrics();
+	cout << "Média: " << average << endl;
+	// cout << "Variância:" << variance << endl;
+	cout << "Desvio padrão: " << standard_deviation << endl;
+
+	string temp = "Valores: [";
+	for (int i = 0; i < PARAMS_SIZE; i++) {
+		temp += number_to_String(optimun_params_array[i]);
+		if (i != PARAMS_SIZE - 1) {
+			temp += ", ";
+		}
+	}
+	temp += "]";
+	cout << temp << endl;
 
 	cout << "Tempo de exec (ABC): " << calculate_time(time_start, clock())
 			<< " ms" << endl;
@@ -113,8 +131,8 @@ double calculate_function(double solution[PARAMS_SIZE]) {
 
 	/*
 	 // MIN f(x, y) = x^2–x*y+y^2–3*y
-	 return pow(solution[0], 2) - solution[0] * solution[1] + pow(solution[1], 2)
-	 - 3 * solution[1];
+	 return pow(solution[0], 2) - solution[0] * solution[1]
+	 + pow(solution[1], 2) - 3 * solution[1];
 	 */
 
 	/*
@@ -134,8 +152,8 @@ double calculate_function(double solution[PARAMS_SIZE]) {
 	 */
 
 	// MIN f(x,y) = x*sen(4*x) + 1.1*y*sen(2*y)
-	return solution[0] * sin(4 * solution[0])
-			+ 1.1 * solution[1] * sin(2 * solution[1]);
+	return solution[0] * sin(4 * solution[0]) + 1.1 * solution[1] * sin(
+			2 * solution[1]);
 }
 
 double calculate_fitness(double value) {
@@ -154,28 +172,14 @@ void init_bee(int index) {
 	double solution[PARAMS_SIZE];
 	for (int j = 0; j < PARAMS_SIZE; j++) {
 		double r = get_random_number();
-		foods_matrix[index][j] =
-				r
-						* (bounds_matrix[j][UPPER_BOUND]
-								- bounds_matrix[j][LOWER_BOUND])
-						+ bounds_matrix[j][LOWER_BOUND];
+		foods_matrix[index][j] = r * (bounds_matrix[j][UPPER_BOUND]
+				- bounds_matrix[j][LOWER_BOUND])
+				+ bounds_matrix[j][LOWER_BOUND];
 		solution[j] = foods_matrix[index][j];
 	}
 	function_array[index] = calculate_function(solution);
 	fitness_array[index] = calculate_fitness(function_array[index]);
 	trail_count_array[index] = 0;
-}
-
-void get_best_source() {
-	for (int i = 0; i < FOOD_SOURCES_SIZE; i++) {
-		//-------------------------------------------------- MAX > / MIN <
-		if (function_array[i] < optimum_solution) {
-			optimum_solution = function_array[i];
-			for (int j = 0; j < PARAMS_SIZE; j++) {
-				optimun_params_array[j] = foods_matrix[i][j];
-			}
-		}
-	}
 }
 
 void send_employed_bees() {
@@ -207,13 +211,13 @@ void send_employed_bees() {
 		/* se ultrapassar os limites*/
 		if (new_solution[param_to_modify]
 				< bounds_matrix[param_to_modify][LOWER_BOUND]) {
-			new_solution[param_to_modify] =
-					bounds_matrix[param_to_modify][LOWER_BOUND];
+			new_solution[param_to_modify]
+					= bounds_matrix[param_to_modify][LOWER_BOUND];
 		}
 		if (new_solution[param_to_modify]
 				> bounds_matrix[param_to_modify][UPPER_BOUND]) {
-			new_solution[param_to_modify] =
-					bounds_matrix[param_to_modify][UPPER_BOUND];
+			new_solution[param_to_modify]
+					= bounds_matrix[param_to_modify][UPPER_BOUND];
 		}
 
 		double new_solution_function = calculate_function(new_solution);
@@ -278,19 +282,19 @@ void send_onlooker_bees() {
 			r = get_random_number();
 			new_solution[param_to_modify] = foods_matrix[i][param_to_modify]
 					+ (foods_matrix[i][param_to_modify]
-							- foods_matrix[neighbour][param_to_modify])
-							* (r - 0.5) * 2;
+							- foods_matrix[neighbour][param_to_modify]) * (r
+							- 0.5) * 2;
 
 			/* se ultrapassar os limites*/
 			if (new_solution[param_to_modify]
 					< bounds_matrix[param_to_modify][LOWER_BOUND]) {
-				new_solution[param_to_modify] =
-						bounds_matrix[param_to_modify][LOWER_BOUND];
+				new_solution[param_to_modify]
+						= bounds_matrix[param_to_modify][LOWER_BOUND];
 			}
 			if (new_solution[param_to_modify]
 					> bounds_matrix[param_to_modify][UPPER_BOUND]) {
-				new_solution[param_to_modify] =
-						bounds_matrix[param_to_modify][UPPER_BOUND];
+				new_solution[param_to_modify]
+						= bounds_matrix[param_to_modify][UPPER_BOUND];
 			}
 
 			double new_solution_function = calculate_function(new_solution);
@@ -327,4 +331,33 @@ void send_scout_bees() {
 	if (trail_count_array[max_trial_index] >= LIMIT) {
 		init_bee(max_trial_index);
 	}
+}
+
+void get_best_source() {
+	for (int i = 0; i < FOOD_SOURCES_SIZE; i++) {
+		//-------------------------------------------------- MAX > / MIN <
+		if (function_array[i] < optimum_solution) {
+			optimum_solution = function_array[i];
+			for (int j = 0; j < PARAMS_SIZE; j++) {
+				optimun_params_array[j] = foods_matrix[i][j];
+			}
+		}
+	}
+}
+
+void calculate_metrics() {
+	// Calcular a média
+	double sum = 0;
+	for (int i = 0; i < FOOD_SOURCES_SIZE; i++) {
+		sum += function_array[i];
+	}
+	average = (double) sum / (double) FOOD_SOURCES_SIZE;
+	// Calcuar a variância
+	sum = 0;
+	for (int i = 0; i < FOOD_SOURCES_SIZE; i++) {
+		sum += pow(function_array[i] - average, 2);
+	}
+	variance = (double) sum / (double) FOOD_SOURCES_SIZE;
+	// Calculando o desvio padrão
+	standard_deviation = pow(variance, 0.5);
 }
