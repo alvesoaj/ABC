@@ -16,7 +16,7 @@ using namespace std;
 
 // BUG Eclipse
 // #define CLOCKS_PER_SEC 1000000
-/* Parâmetros do algoritmo */
+/* Parametros do algoritmo */
 #define PI 3.14159265
 #define POPULATION_SIZE 8
 #define MAX_NUM_CYCLES 500
@@ -34,12 +34,12 @@ double trail_count_array[FOOD_SOURCES_SIZE];
 double probabilities_array[FOOD_SOURCES_SIZE];
 double optimum_solution;
 double optimun_params_array[PARAMS_SIZE];
-// métricas
+// metricas
 double average = 0.0;
 double variance = 0.0;
 double standard_deviation = 0.0;
 
-/* Funções auxiliares */
+/* Funcoes auxiliares */
 string number_to_String(double n);
 double calculate_time(clock_t start, clock_t end);
 void init();
@@ -56,7 +56,7 @@ void calculate_metrics();
 
 int main(int argc, char *argv[]) {
 	clock_t time_start = clock();
-	int cycle = 0; // Inicializar o contador de interações
+	int cycle = 0; // Inicializar o contador de interacoes
 	srand(time(NULL)); // Para um randon mais eficiente
 	// comandos iniciais
 	init();
@@ -77,12 +77,12 @@ int main(int argc, char *argv[]) {
 		cycle++;
 	}
 
-	cout << "\nMelhor solução: f(x): " << optimum_solution << endl;
+	cout << "\nMelhor solucoo: f(x): " << optimum_solution << endl;
 
 	calculate_metrics();
-	cout << "Média: " << average << endl;
-	// cout << "Variância:" << variance << endl;
-	cout << "Desvio padrão: " << standard_deviation << endl;
+	cout << "Media: " << average << endl;
+	// cout << "Variancia:" << variance << endl;
+	cout << "Desvio padrao: " << standard_deviation << endl;
 
 	string temp = "Valores: [";
 	for (int i = 0; i < PARAMS_SIZE; i++) {
@@ -114,12 +114,12 @@ void init() {
 	for (int i = 0; i < FOOD_SOURCES_SIZE; i++) {
 		init_bee(i);
 	}
-	// pegar uma solução qualquer como a melhor
+	// pegar uma solucao qualquer como a melhor
 	optimum_solution = function_array[0];
 	for (int i = 0; i < PARAMS_SIZE; i++) {
 		optimun_params_array[i] = foods_matrix[0][i];
 	}
-	// pegar a real melhor solução
+	// pegar a real melhor solucao
 	get_best_source();
 }
 
@@ -130,7 +130,7 @@ double calculate_function(double solution[PARAMS_SIZE]) {
 	 */
 
 	/*
-	 // MIN f(x, y) = x^2–x*y+y^2–3*y
+	 // MIN f(x, y) = x^2 - x*y + y^2 - 3*y
 	 return pow(solution[0], 2) - solution[0] * solution[1]
 	 + pow(solution[1], 2) - 3 * solution[1];
 	 */
@@ -160,7 +160,7 @@ double calculate_fitness(double value) {
 	if (value >= 0) {
 		return 1 / (value + 1);
 	} else {
-		return 1 + abs(value);
+		return 1 + abs((long)value);
 	}
 }
 
@@ -196,7 +196,7 @@ void send_employed_bees() {
 			neighbour = (int) (r * FOOD_SOURCES_SIZE);
 		} while (neighbour == i);
 
-		/* copiar solução atual */
+		/* copiar solucao atual */
 		for (int j = 0; j < PARAMS_SIZE; j++) {
 			new_solution[j] = foods_matrix[i][j];
 		}
@@ -223,7 +223,7 @@ void send_employed_bees() {
 		double new_solution_function = calculate_function(new_solution);
 		double new_solution_fitness = calculate_fitness(new_solution_function);
 
-		/* verificar se a nova solução é melhor que a atual */
+		/* verificar se a nova solucao e melhor que a atual */
 		//-------------------------------------------------- MAX < / MIN >
 		if (new_solution_fitness > fitness_array[i]) {
 			trail_count_array[i] = 0;
@@ -273,7 +273,7 @@ void send_onlooker_bees() {
 				neighbour = (int) (r * FOOD_SOURCES_SIZE);
 			} while (neighbour == i);
 
-			/* copiar solução atual */
+			/* copiar solucao atual */
 			for (int j = 0; j < PARAMS_SIZE; j++) {
 				new_solution[j] = foods_matrix[i][j];
 			}
@@ -301,7 +301,7 @@ void send_onlooker_bees() {
 			double new_solution_fitness = calculate_fitness(
 					new_solution_function);
 
-			/* verificar se a nova solução é melhor que a atual */
+			/* verificar se a nova solucao e melhor que a atual */
 			//-------------------------------------------------- MAX < / MIN >
 			if (new_solution_fitness > fitness_array[i]) {
 				trail_count_array[i] = 0;
@@ -346,18 +346,18 @@ void get_best_source() {
 }
 
 void calculate_metrics() {
-	// Calcular a média
+	// Calcular a media
 	double sum = 0;
 	for (int i = 0; i < FOOD_SOURCES_SIZE; i++) {
 		sum += function_array[i];
 	}
 	average = (double) sum / (double) FOOD_SOURCES_SIZE;
-	// Calcuar a variância
+	// Calcuar a variancia
 	sum = 0;
 	for (int i = 0; i < FOOD_SOURCES_SIZE; i++) {
 		sum += pow(function_array[i] - average, 2);
 	}
 	variance = (double) sum / (double) FOOD_SOURCES_SIZE;
-	// Calculando o desvio padrão
+	// Calculando o desvio padrao
 	standard_deviation = pow(variance, 0.5);
 }
