@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 		cycle++;
 	}
 
-	cout << "\nMelhor solucoo: f(x): " << optimum_solution << endl;
+	cout << "\nMelhor solucao: f(x): " << optimum_solution << endl;
 
 	calculate_metrics();
 	cout << "Media: " << average << endl;
